@@ -1,6 +1,7 @@
 
 import type {NextAuthOptions} from 'next-auth'
 import CredentialsProviders from 'next-auth/providers/credentials'
+import {getUser} from '@/utils/db/DB'
 
 export const options: NextAuthOptions = {
     providers: [
@@ -16,6 +17,10 @@ export const options: NextAuthOptions = {
             },
             // get data from db
             async authorize(credentials) {
+                if (!credentials) {
+                    return null
+                }
+                // const user = getUser(credentials.username)
                 const user = {id: "1", email:"John@corepack.com", name: "John", password: "password"}
                 // const user = {id: "1", name: "Customer1", password: "Customer1"}
 

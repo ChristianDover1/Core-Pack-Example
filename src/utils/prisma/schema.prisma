@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Employee {
+  employee_id Int      @id @default(autoincrement())
+  email       String   @unique
+  password    String
+  name        String
+  admin       Boolean
+  dateCreated DateTime @default(now())
+  jobs        Job[]    @relation("EmployeeJobs")
+  employeeJobs EmployeeJob[]
+}
+
+model Customer {
+  customer_id Int      @id @default(autoincrement())
+  email       String   @unique
+  password    String
+  name        String
+  companyName String
+  dateCreated DateTime @default(now())
+  jobs        Job[]
+}
+
+model Job {
+  job_id              Int       @id @default(autoincrement())
+  job_name            String    @unique
+  total_items         Int
+  finished_items      Int
+  employee_id         Int?
+  customer_id         Int
+  expected_finish_date DateTime?
+  actual_finish_date  DateTime?
+  dateCreated         DateTime  @default(now())
+  notes               Note[]
+  employeeJobs        EmployeeJob[]
+  noteJobs            NoteJob[]
+
+  employee  Employee? @relation("EmployeeJobs", fields: [employee_id], references: [employee_id])
+  customer  Customer  @relation(fields: [customer_id], references: [customer_id])
+}
+
+model Note {
+  note_id     Int      @id @default(autoincrement())
+  job_id      Int
+  note        String
+  photo_url   String
+  isEmployee  Boolean
+  user_id     Int
+  dateCreated DateTime @default(now())
+  noteJobs    NoteJob[]
+
+  job         Job      @relation(fields: [job_id], references: [job_id])
+}
+
+model EmployeeJob {
+  employee_id Int
+  job_id      Int
+
+  @@id([employee_id, job_id])
+
+  employee  Employee @relation(fields: [employee_id], references: [employee_id])
+  job       Job      @relation(fields: [job_id], references: [job_id])
+}
+
+model NoteJob {
+  note_job_id Int      @id @default(autoincrement())
+  job_id      Int
+  note_id     Int
+
+  job         Job      @relation(fields: [job_id], references: [job_id])
+  note        Note     @relation(fields: [note_id], references: [note_id])
+}

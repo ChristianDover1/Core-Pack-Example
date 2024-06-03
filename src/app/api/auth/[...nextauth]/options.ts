@@ -1,7 +1,7 @@
 
 import type {NextAuthOptions} from 'next-auth'
 import CredentialsProviders from 'next-auth/providers/credentials'
-import {getEmployee} from '@/utils/db/DB'
+import {getEmployee} from '@/utils/prisma/db/employees'
 
 export const options: NextAuthOptions = {
     providers: [
@@ -17,11 +17,13 @@ export const options: NextAuthOptions = {
             },
             // get data from db
             async authorize(credentials, req) {
+                
                 if (!credentials) {
                     return null
                 }
+                console.log("RUNNING")
                 var user = await getEmployee(credentials.email) as any
-                user = user[0]
+                console.log(user)
                 // user.finally(() => {})
                 // const user = {id: "1", email:"John@corepack.com", name: "John", password: "password"}
                 // const user = {id: "1", name: "Customer1", password: "Customer1"}

@@ -1,4 +1,5 @@
-import { getEmployee, getEmployeeJobs } from '@/utils/db/DB';
+// import { getEmployeeJobs } from '@/utils/db/jobs';
+import { getEmployeeJobs } from '@/utils/prisma/db/jobs';
 import React, { useEffect, useState } from 'react';
 
 const JobsFeed: React.FC = async () => { 

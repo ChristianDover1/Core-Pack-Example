@@ -1,4 +1,5 @@
 import prisma from "../prisma";
+import {Customer} from "@prisma/client"
 
 export async function insertCustomer(email: string, password: string, name: string, companyName: string) {
     try {
@@ -23,7 +24,7 @@ export async function getCustomer(email: string) {
             where: {
                 email,
             },
-        });
+        }) as Customer;
         return customer;
     } catch (error) {
         console.error('Error getting customer:', error);

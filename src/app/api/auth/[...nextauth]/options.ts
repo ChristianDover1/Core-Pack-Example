@@ -2,14 +2,22 @@
 import type {NextAuthOptions} from 'next-auth'
 import CredentialsProviders from 'next-auth/providers/credentials'
 import {getEmployee} from '@/utils/prisma/db/employees'
+import {getCustomer} from '@/utils/prisma/db/customers'
+import {Employee, Customer} from "@prisma/client"
+
+import { Prisma } from '@prisma/client'
 
 export const options: NextAuthOptions = {
+    session:{
+        // strategy: 'jwt',
+        maxAge: 14400 // 4 hours
+    },
     providers: [
         // GithubProvider({
-        //     clientId: process.env.GITHUB_ID as string,
-        //     clientSecret: process.env.GITHUB_SECRET as string
-        // }),
-        CredentialsProviders({
+            //     clientId: process.env.GITHUB_ID as string,
+            //     clientSecret: process.env.GITHUB_SECRET as string
+            // }),
+            CredentialsProviders({
             name: "Customer Login",
             credentials: {
                 email: {label: "email:", type: "text", placeholder: "Email"},
@@ -22,13 +30,9 @@ export const options: NextAuthOptions = {
                     return null
                 }
                 console.log("RUNNING")
-                var user = await getEmployee(credentials.email) as any
+                // var user = await getCustomer(credentials.email) as Customer
+                var user = await getCustomer(credentials.email) as any
                 console.log(user)
-                // user.finally(() => {})
-                // const user = {id: "1", email:"John@corepack.com", name: "John", password: "password"}
-                // const user = {id: "1", name: "Customer1", password: "Customer1"}
-                // return user.then((res: any) => {
-                // console.log(res)
                 console.log(credentials?.email === user.email , credentials?.password === user.password)
                 if (credentials?.email === user.email && credentials?.password === user.password) {
                     // return Promise.resolve(user)
@@ -51,13 +55,11 @@ export const options: NextAuthOptions = {
                 if (!credentials) {
                     return null
                 }
-                var user = await getEmployee(credentials.email) as any
-                user = user[0]
-                // user.finally(() => {})
-                // const user = {id: "1", email:"John@corepack.com", name: "John", password: "password"}
-                // const user = {id: "1", name: "Customer1", password: "Customer1"}
-                // return user.then((res: any) => {
-                // console.log(res)
+                // var user = await getEmployee(credentials.email) as Employee
+                var user?: Employee = await getEmployee(credentials.email)
+                if (user == undefined){
+                    //handle email doesn't exist
+                }
                 console.log(credentials?.email === user.email , credentials?.password === user.password)
                 if (credentials?.email === user.email && credentials?.password === user.password) {
                     // return Promise.resolve(user)

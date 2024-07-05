@@ -107,6 +107,110 @@ async function main() {
             { job_id: 10, note_id: 10 },
         ],
     });
+// adding additional Data
+
+    // Adding 50 new unique notes for jobs
+
+    const jobNames = [
+        "Project Apollo", "Redwood Expansion", "Skyline Build", "Horizon Initiative",
+        "Quantum Leap", "Apex Construction", "Summit Project", "Cascade Development",
+        "Phoenix Rise", "Sierra Peak", "Evergreen Plan", "Orion Project",
+        "Vanguard Mission", "Pioneer Quest", "Nova Construction", "Galactic Build",
+        "Zenith Construction", "Voyager Project", "Atlas Expansion", "Nautilus Initiative"
+    ];
+    
+    const newJobs = Array.from({ length: 50 }, (_, i) => ({
+        job_name: `${jobNames[i % jobNames.length]} Phase ${Math.floor(i / jobNames.length) + 1}`,
+        total_items: Math.floor(Math.random() * 500) + 100,
+        finished_items: Math.floor(Math.random() * 100),
+        customer_id: (i % 10) + 1,
+        expected_finish_date: new Date(2024, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1),
+    }));
+    
+    await prisma.job.createMany({
+        data: newJobs,
+    });
+
+    // ( Chat gpt generated )
+    
+    const employeeNoteDescriptions = [
+        "Initial planning phase started.",
+        "Design phase completed.",
+        "Site inspection completed.",
+        "Permit applications submitted.",
+        "Materials procured.",
+        "Construction phase started.",
+        "Quality check in progress.",
+        "Safety protocols established.",
+        "Final touches and review.",
+        "Project completion report filed.",
+        "Budget review and adjustment.",
+        "Team meeting conducted.",
+        "Milestone achieved.",
+        "Additional resources allocated.",
+        "Risk assessment completed.",
+        "Project timeline revised.",
+        "Stakeholder approval received.",
+        "Quality assurance phase started."
+    ];
+
+    const customerNoteDescriptions = [
+        "How is my order going?",
+        "Did the shipment of food arrive yet?",
+        "When is the first shipment ready?",
+        "Can I get an update on my order status?",
+        "I need to know the estimated delivery time.",
+        "Have the materials been delivered?",
+        "Is there any delay in the schedule?",
+        "Can you provide more details on the current progress?",
+        "I am concerned about the quality of the items.",
+        "Can we reschedule our next meeting?",
+        "I need to review the project budget.",
+        "Please send me a detailed report.",
+        "I have not received the latest update.",
+        "When can we have a site visit?",
+        "I approved the final project plan.",
+        "Is there a possibility to extend the timeline?",
+        "We need more resources for the project.",
+        "Please provide a status update.",
+        "Are the safety protocols being followed?",
+        "Can we change the project scope?"
+    ];
+
+
+
+    // Adding 200 new unique notes for jobs
+    const totalNewNotes = 200;
+    const newJobNotes = Array.from({ length: totalNewNotes }, (_, i) => {
+        const isEmployee = Math.random() > 0.5;
+        const noteDescriptions = isEmployee ? employeeNoteDescriptions : customerNoteDescriptions;
+        const noteDescription = noteDescriptions[Math.floor(Math.random() * noteDescriptions.length)];
+        const jobId = (i % 10) + 1; // Assuming job IDs range from 1 to 10
+        const userId = isEmployee ? (i % 10) + 1 : Math.floor(Math.random() * 10) + 1; // Employee IDs range from 1 to 10, Customer IDs range from 1 to 10
+        return {
+            job_id: jobId,
+            user_id: userId,
+            isEmployee,
+            note: `${noteDescription} Additional details for note ${i + 51}.`,
+            photo_url: `http://example.com/photo${51 + i}.jpg`,
+        };
+    });
+
+    // Create notes in the note table
+    const createdNotes = await prisma.note.createMany({
+        data: newJobNotes,
+    });
+     // Create entries in the noteJob join table
+     const noteJobEntries = newJobNotes.map((note, index) => ({
+        job_id: note.job_id,
+        note_id: index + 1 + 20, // Adjust index to follow existing notes IDs (assuming previous notes had IDs 1-20)
+    }));
+
+    await prisma.noteJob.createMany({
+        data: noteJobEntries,
+    });
+
+    await prisma.$disconnect();
 }
 
 main()

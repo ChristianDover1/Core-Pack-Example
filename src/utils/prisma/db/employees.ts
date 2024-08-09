@@ -25,6 +25,7 @@ export async function getEmployee(email: string) {
             email: email
         }
         }) as Employee;
+        console.log("Employee",employee)
         return employee;
     } catch (error) {
         console.error('Error fetching employee:', error);
